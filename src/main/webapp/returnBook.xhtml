@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Return Book - Library Management System</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<body>
+    <f:view>
+        <h:form>
+            <div class="container">
+                <h1>Return Book</h1>
+                
+                <h:messages globalOnly="false" errorClass="error" infoClass="info" 
+                           warnClass="warn" style="margin: 20px 0;"/>
+                
+                <div class="navigation">
+                    <h:commandButton value="Home" action="#{navigationBean.goToHome}" 
+                                     styleClass="nav-button" immediate="true"/>
+                    <h:commandButton value="Add Book" action="#{navigationBean.goToAddBook}" 
+                                     styleClass="nav-button" immediate="true"/>
+                    <h:commandButton value="Issue Book" action="#{navigationBean.goToIssueBook}" 
+                                     styleClass="nav-button" immediate="true"/>
+                    <h:commandButton value="Return Book" action="#{navigationBean.goToReturnBook}" 
+                                     styleClass="nav-button active" immediate="true"/>
+                    <h:commandButton value="Reports" action="#{navigationBean.goToReports}" 
+                                     styleClass="nav-button" immediate="true"/>
+                    <h:panelGroup rendered="#{memberBean.loggedIn}">
+                        <h:commandButton value="Logout (#{memberBean.loggedInMember.memberId})" 
+                                         action="#{memberBean.logout}" 
+                                         styleClass="nav-button logout-button" immediate="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!memberBean.loggedIn}">
+                        <h:commandButton value="🔐 Login / Signup" action="#{navigationBean.goToLogin}" 
+                                         styleClass="nav-button login-button" immediate="true"/>
+                    </h:panelGroup>
+                </div>
+                
+                <div class="content">
+                    <f:event type="preRenderView" listener="#{transactionBean.onPageLoad}"/>
+                    <h3>Currently Issued Books</h3>
+                    <h:dataTable value="#{transactionBean.issuedBooks}" var="trans" 
+                                styleClass="data-table" headerClass="table-header">
+                        <h:column>
+                            <f:facet name="header">Transaction ID</f:facet>
+                            #{trans.id}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Book Title</f:facet>
+                            #{trans.book.title}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Member</f:facet>
+                            #{trans.member.fullName} (#{trans.member.memberId})
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Issue Date</f:facet>
+                            #{trans.issueDate}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Due Date</f:facet>
+                            #{trans.dueDate}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Action</f:facet>
+                            <h:commandButton value="Return" 
+                                           action="#{transactionBean.returnBook}"
+                                           actionListener="#{transactionEventListener.handleReturnAction}">
+                                <f:setPropertyActionListener target="#{transactionBean.transaction}" 
+                                                           value="#{trans}"/>
+                            </h:commandButton>
+                        </h:column>
+                    </h:dataTable>
+                </div>
+            </div>
+        </h:form>
+    </f:view>
+</body>
+</html>
+
